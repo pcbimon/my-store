@@ -1,0 +1,41 @@
+services:
+  db:
+    image: postgres:16
+    container_name: app-db
+    environment:
+      POSTGRES_USER: medusauser
+      POSTGRES_PASSWORD: mystorepass
+      POSTGRES_DB: medusadb
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./posgress/data:/var/lib/postgresql/data
+      - ./posgress/backup:/tmp/backup
+    networks:
+      - my-store-net
+  app-backstore:
+    build: ./my-medusa-store
+    container_name: app-backstore
+    ports:
+      - "9000:9000"
+    networks:
+      - my-store-net
+  app-frontstore:
+    build: ./my-medusa-store-storefront
+    container_name: app-frontstore
+    ports:
+      - "8000:8000"
+    networks:
+      - my-store-net
+  meilisearch:
+    image: getmeili/meilisearch:latest
+    container_name: app-meilisearch
+    environment:
+      MEILI_MASTER_KEY: mallikas_for_itds362
+    ports:
+      - "7700:7700"
+    networks:
+      - my-store-net
+networks:
+  my-store-net:
+    driver: bridge
